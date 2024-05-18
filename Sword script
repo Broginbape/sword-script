@@ -1,0 +1,38 @@
+local sword = Instance.new("Tool")
+sword.Name = "Sword"
+
+local handle = Instance.new("Part", sword)
+handle.Name = "Handle"
+handle.Size = Vector3.new(1, 5, 1)
+
+local blade = Instance.new("Part", sword)
+blade.Name = "Blade"
+blade.Size = Vector3.new(1, 5, 2) -- Adjust the Y component to make the blade shorter
+blade.Color = Color3.fromRGB(0, 0, 0)
+blade.Position = Vector3.new(0, 2.5, 0)
+
+local weld = Instance.new("Weld", handle)
+weld.Part0 = handle
+weld.Part1 = blade
+
+local function onSwing()
+    print("Swing!")
+end
+
+local function onBladeTouched(otherPart)
+    local character = otherPart.Parent
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid:TakeDamage(10) -- Adjust damage value as needed
+        humanoid.Died:Connect(function()
+            humanoid.Health = humanoid.MaxHealth -- Reset health
+            wait(5) -- Respawn delay
+            humanoid.Parent = game.Workspace -- Move the character to Workspace to respawn
+        end)
+    end
+end
+
+blade.Touched:Connect(onBladeTouched)
+sword.Activated:Connect(onSwing)
+
+sword.Parent = game.Players.LocalPlayer.Backpack
